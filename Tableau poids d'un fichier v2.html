@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprendre les Tailles de Fichiers</title>
+    <style>
+        body {
+            background-color: #f3f0ff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #6b46c1;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+        .subtitle {
+            text-align: center;
+            color: #4a5568;
+            margin-bottom: 30px;
+            font-size: 1.2em;
+        }
+        .tabs {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 32px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .tab {
+            padding: 12px 24px;
+            background-color: #f8f9fa;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+        }
+        .tab:hover {
+            background-color: #f3f0ff;
+        }
+        .tab.active {
+            background-color: #6b46c1;
+            color: white;
+            border-color: #553c9a;
+        }
+        .tab-content {
+            display: none;
+            padding: 20px;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Convertisseur */
+        .converter {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+        .input-group {
+            background-color: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            font-size: 1.1em;
+            margin-top: 8px;
+        }
+        .results {
+            background-color: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .result-item {
+            margin-bottom: 8px;
+            font-family: monospace;
+        }
+
+        /* Tableau */
+        .size-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .size-table th, .size-table td {
+            padding: 16px;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: left;
+        }
+        .size-table th {
+            background-color: #f8fafc;
+            color: #4a5568;
+            font-weight: 600;
+        }
+        .size-table tr:hover {
+            background-color: #f8fafc;
+        }
+        .byte-info {
+            color: #718096;
+            font-size: 0.9em;
+        }
+
+        /* Usages Courants */
+        .category {
+            margin-bottom: 24px;
+        }
+        .category-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2d3748;
+        }
+        .category-list {
+            list-style-type: none;
+            padding-left: 32px;
+            margin: 0;
+        }
+        .category-list li {
+            margin-bottom: 8px;
+            color: #4a5568;
+        }
+
+        /* Temps de Transfert */
+        .transfer-info {
+            background-color: #f8fafc;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+        }
+        .transfer-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+        .transfer-card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        .transfer-card h3 {
+            margin-bottom: 16px;
+            color: #4a5568;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .transfer-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        .transfer-list li {
+            margin-bottom: 8px;
+            color: #4a5568;
+        }
+
+        /* Le saviez-vous */
+        .fun-fact {
+            margin-top: 32px;
+            background-color: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #6b46c1;
+        }
+        .fun-fact h3 {
+            margin-top: 0;
+            color: #4a5568;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📱 Comprendre les Tailles de Fichiers 💾</h1>
+        <p class="subtitle">Explorez les différentes unités de mesure des données numériques</p>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('convertisseur')">Convertisseur</button>
+            <button class="tab" onclick="showTab('tableau')">Tableau des Tailles</button>
+            <button class="tab" onclick="showTab('usages')">Usages Courants</button>
+            <button class="tab" onclick="showTab('transfert')">Temps de Transfert</button>
+        </div>
+
+        <!-- Convertisseur -->
+        <div id="convertisseur" class="tab-content active">
+            <div class="converter">
+                <div class="input-group">
+                    <label>Entrez une taille en octets :</label>
+                    <input type="number" id="bytesInput" value="1024" onchange="updateConversion()">
+                </div>
+                <div class="results">
+                    <h3>Conversions :</h3>
+                    <div id="conversionResults"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tableau des Tailles -->
+        <div id="tableau" class="tab-content">
+            <table class="size-table">
+                <thead>
+                    <tr>
+                        <th>Taille Numérique</th>
+                        <th>Exemples de Fichiers</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <strong>1 Ko (Kilooctet)</strong><br>
+                            <span class="byte-info">1 024 octets</span>
+                        </td>
+                        <td>
+                            • Un document texte court (1 page)<br>
+                            • Une petite image en noir et blanc<br>
+                            • Un fichier de configuration
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <strong>1 Mo (Mégaoctet)</strong><br>
+                            <span class="byte-info">1 048 576 octets</span>
+                        </td>
+                        <td>
+                            • Une photo de smartphone en qualité web<br>
+                            • Un document PDF de quelques pages<br>
+                            • Une minute de musique MP3 en basse qualité
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <strong>100 Mo</strong><br>
+                            <span class="byte-info">104 857 600 octets</span>
+                        </td>
+                        <td>
+                            • 25 morceaux de musique MP3<br>
+                            • Une application mobile simple<br>
+                            • Un ensemble de photos haute résolution
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <strong>1 Go (Gigaoctet)</strong><br>
+                            <span class="byte-info">1 073 741 824 octets</span>
+                        </td>
+                        <td>
+                            • Un film en HD<br>
+                            • 200-300 photos de smartphone<br>
+                            • Une heure de vidéo 4K
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <strong>1 To (Téraoctet)</strong><br>
+                            <span class="byte-info">1 099 511 627 776 octets</span>
+                        </td>
+                        <td>
+                            • 250 films en HD<br>
+                            • Une bibliothèque de jeux vidéo<br>
+                            • Les photos et vidéos d'une année entière
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Usages Courants -->
+        <div id="usages" class="tab-content">
+            <div class="category">
+                <div class="category-title">
+                    📱 Smartphone
+                </div>
+                <ul class="category-list">
+                    <li>• Photo : 2-4 Mo</li>
+                    <li>• Application : 30-100 Mo</li>
+                    <li>• Vidéo 1 min : 50-100 Mo</li>
+                </ul>
+            </div>
+
+            <div class="category">
+                <div class="category-title">
+                    💻 Ordinateur
+                </div>
+                <ul class="category-list">
+                    <li>• Document Word : 1-5 Mo</li>
+                    <li>• Logiciel : 100-500 Mo</li>
+                    <li>• Jeu vidéo : 20-100 Go</li>
+                </ul>
+            </div>
+
+            <div class="category">
+                <div class="category-title">
+                    🎥 Multimédia
+                </div>
+                <ul class="category-list">
+                    <li>• Musique MP3 : 3-7 Mo</li>
+                    <li>• Film HD : 1-4 Go</li>
+                    <li>• Film 4K : 15-30 Go</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Temps de Transfert -->
+        <div id="transfert" class="tab-content">
+            <div class="transfer-info">
+                Un film 4K d'1h30 peut peser entre 4 et 8 Go selon la compression.
+            </div>
+
+            <div class="transfer-grid">
+                <div class="transfer-card">
+                    <h3>⚡ Avec une connexion ADSL (8 Mbps)</h3>
+                    <ul class="transfer-list">
+                        <li>• 1 Mo : environ 1 seconde</li>
+                        <li>• 100 Mo : environ 2 minutes</li>
+                        <li>• 1 Go : environ 20 minutes</li>
+                    </ul>
+                </div>
+
+                <div class="transfer-card">
+                    <h3>🚀 Avec la fibre (100 Mbps)</h3>
+                    <ul class="transfer-list">
+                        <li>• 1 Mo : moins d'une seconde</li>
+                        <li>• 100 Mo : environ 8 secondes</li>
+                        <li>• 1 Go : environ 1 minute 20</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Le saviez-vous -->
+        <div class="fun-fact">
+            <h3>Le saviez-vous ?</h3>
+            <p>Le terme "octet" vient du latin "octo" (huit) car il représente 8 bits.</p>
+            <p><strong>Astuce pour estimation rapide :</strong></p>
+            <p>1 Ko ≈ 1000 octets, 1 Mo ≈ 1000 Ko, etc.</p>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabId) {
+            // Masquer tous les contenus
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            // Désactiver tous les onglets
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Afficher le contenu sélectionné
+            document.getElementById(tabId).classList.add('active');
+            // Activer l'onglet sélectionné
+            Array.from(document.querySelectorAll('.tab')).find(tab => 
+                tab.textContent.toLowerCase().includes(tabId)
+            ).classList.add('active');
+        }
+
+        function formatBytes(bytes) {
+            const ko = bytes / 1024;
+            const mo = ko / 1024;
+            const go = mo / 1024;
+            const to = go / 1024;
+
+            return {
+                octets: bytes.toLocaleString() + ' octets',
+                ko: ko.toFixed(3) + ' Ko',
+                mo: mo.toFixed(3) + ' Mo',
+                go: go.toFixed(3) + ' Go',
+                to: to.toFixed(3) + ' To'
+            };
+        }
+
+        function updateConversion() {
+            const bytes = parseFloat(document.getElementById('bytesInput').value) || 0;
+            const results = formatBytes(bytes);
+            const container = document.getElementById('conversionResults');
+            container.innerHTML = Object.entries(results)
+                .map(([unit, value]) => `<div class="result-item">En ${unit} : ${value}</div>`)
+                .join('');
+        }
+
+        // Conversion initiale
+        updateConversion();
+    </script>
+</body>
+</html>
